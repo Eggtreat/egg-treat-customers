@@ -20,8 +20,12 @@ workflows:
           rm -rf android
           flutter create . --platforms=android --org com.eggtreat.customers
           flutter pub get
-          # Fix Kotlin Version
-          sed -i '' "s/ext.kotlin_version = '.*'/ext.kotlin_version = '1.9.22'/" android/build.gradle || sed -i "s/ext.kotlin_version = '.*'/ext.kotlin_version = '1.9.22'/" android/build.gradle
+          # Fix Kotlin Version in all files
+          find android -name "*.gradle" -o -name "*.kts" | xargs sed -i '' 's/1\.8\..*/1.9.22"/g' 2>/dev/null || find android -name "*.gradle" -o -name "*.kts" | xargs sed -i 's/1\.8\..*/1.9.22"/g'
+          find android -name "*.gradle" -o -name "*.kts" | xargs sed -i '' 's/1\.9\.10/1.9.22/g' 2>/dev/null || find android -name "*.gradle" -o -name "*.kts" | xargs sed -i 's/1\.9\.10/1.9.22/g'
+          find android -name "*.gradle" -o -name "*.kts" | xargs sed -i '' 's/org.jetbrains.kotlin.android" version ".*"/org.jetbrains.kotlin.android" version "1.9.22"/g' 2>/dev/null || find android -name "*.gradle" -o -name "*.kts" | xargs sed -i 's/org.jetbrains.kotlin.android" version ".*"/org.jetbrains.kotlin.android" version "1.9.22"/g'
+          echo "Kotlin Fixed"
+          cat android/settings.gradle || cat android/settings.gradle.kts | head -n 30
       - name: Build APK
         script: |
           flutter build apk --release --no-tree-shake-icons
