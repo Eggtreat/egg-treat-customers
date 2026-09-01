@@ -2,7 +2,7 @@ workflows:
   android-workflow:
     name: EggTreat Android Fixed
     max_build_duration: 60
-    instance_type: linux_x2
+    instance_type: mac_mini_m2
     environment:
       flutter: 3.22.2
       java: 17
@@ -22,6 +22,6 @@ workflows:
           flutter pub get
       - name: Build APK
         script: |
-          flutter build apk --release --no-tree-shake-icons --verbose
+          flutter build apk --release --no-tree-shake-icons
     artifacts:
       - build/**/outputs/**/*.apk
