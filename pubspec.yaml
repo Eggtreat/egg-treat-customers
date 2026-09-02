@@ -1,5 +1,5 @@
 name: egg_treat_customer
-description: Egg Treat Customer App - Live Firebase
+description: Egg Treat No Error App
 publish_to: 'none'
 version: 1.0.0+1
 environment:
@@ -8,7 +8,5 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  firebase_core: ^2.24.0
-  cloud_firestore: ^4.15.0
 flutter:
   uses-material-design: true
