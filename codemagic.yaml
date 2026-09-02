@@ -1,33 +1,30 @@
 workflows:
   android-workflow:
-    name: EggTreat Android Fixed
-    max_build_duration: 60
+    name: Android Firebase LIVE
+    max_build_duration: 30
     instance_type: mac_mini_m2
     environment:
-      flutter: 3.22.2
+      flutter: stable
       java: 17
-    cache:
-      cache_paths:
-        - ~/.gradle/caches
-        - ~/.pub-cache
     scripts:
-      - name: Get Packages
+      - name: Create Android Folder
         script: |
-          flutter clean
-          flutter pub get
+          flutter create . --platforms=android
+          cp google-services.json android/app/google-services.json || echo "copied"
       - name: Fix V1 Embedding and Kotlin Issue
         script: |
-          rm -rf android
-          flutter create . --platforms=android --org com.eggtreat.customers
+          sed -i '' 's/compileSdkVersion.*/compileSdkVersion 34/' android/app/build.gradle || sed -i 's/compileSdkVersion.*/compileSdkVersion 34/' android/app/build.gradle
+          sed -i '' 's/minSdkVersion.*/minSdkVersion 21/' android/app/build.gradle || sed -i 's/minSdkVersion.*/minSdkVersion 21/' android/app/build.gradle
+      - name: Get Packages
+        script: |
           flutter pub get
-          # Fix Kotlin Version in all files
-          find android -name "*.gradle" -o -name "*.kts" | xargs sed -i '' 's/1\.8\..*/1.9.22"/g' 2>/dev/null || find android -name "*.gradle" -o -name "*.kts" | xargs sed -i 's/1\.8\..*/1.9.22"/g'
-          find android -name "*.gradle" -o -name "*.kts" | xargs sed -i '' 's/1\.9\.10/1.9.22/g' 2>/dev/null || find android -name "*.gradle" -o -name "*.kts" | xargs sed -i 's/1\.9\.10/1.9.22/g'
-          find android -name "*.gradle" -o -name "*.kts" | xargs sed -i '' 's/org.jetbrains.kotlin.android" version ".*"/org.jetbrains.kotlin.android" version "1.9.22"/g' 2>/dev/null || find android -name "*.gradle" -o -name "*.kts" | xargs sed -i 's/org.jetbrains.kotlin.android" version ".*"/org.jetbrains.kotlin.android" version "1.9.22"/g'
-          echo "Kotlin Fixed"
-          cat android/settings.gradle || cat android/settings.gradle.kts | head -n 30
       - name: Build APK
         script: |
           flutter build apk --release --no-tree-shake-icons
     artifacts:
       - build/**/outputs/**/*.apk
+      - build/**/outputs/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - ashok@example.com
